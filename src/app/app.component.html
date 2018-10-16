@@ -1,6 +1,11 @@
-<h5>Main component</h5>
-
-<a [routerLink]="['path']">Path</a>
-<a [routerLink]="['path', '1']">Path ID</a>
+<nav>
+    <div class="nav-wrapper">
+        <a href="#" class="brand-logo">App</a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a [routerLink]="['path']">Home</a></li>
+            <li><a [routerLink]="['path', '1']">Path ID</a></li>
+        </ul>
+    </div>
+</nav>
 
 <router-outlet></router-outlet>

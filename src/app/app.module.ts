@@ -15,10 +15,10 @@ const routes: Routes = [
   { path: "path", component: Child1Component },
   {
     path: "path/:id",
-    component: Child1Component,
-    resolve: {
-      detail: ResolverService
-    }
+    component: Child1Component
+    // resolve: {
+    //   detail: ResolverService
+    // }
   },
   { path: "**", component: AppComponent }
 ];

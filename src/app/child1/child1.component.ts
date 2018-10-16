@@ -1,7 +1,12 @@
-import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  OnDestroy
+} from "@angular/core";
 import { MyServiceService } from "../my-service.service";
 import { Observable } from "rxjs";
-import { ActivatedRoute, Router } from "@angular/router";
+import { ActivatedRoute, Router, NavigationEnd } from "@angular/router";
 import {
   switchMap,
   first,
@@ -9,7 +14,8 @@ import {
   refCount,
   map,
   share,
-  take
+  take,
+  filter
 } from "rxjs/operators";
 
 @Component({
@@ -18,10 +24,12 @@ import {
   styleUrls: ["./child1.component.css"]
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Child1Component implements OnInit {
+export class Child1Component implements OnInit, OnDestroy {
   title = "ObservableHelper";
   posts$: Observable<any>;
   manyPosts$: Observable<any>;
+  sub: any;
+  loading: boolean = false;
 
   constructor(
     private service: MyServiceService,
@@ -29,16 +37,25 @@ export class Child1Component implements OnInit {
     private router: Router
   ) {}
   ngOnInit() {
-    // this.service.getSomeData().subscribe(res => {});
+    this.posts$ = this.service.postsObs$;
 
-    // this.posts$ = this.route.params.pipe(
-    //   switchMap(params => this.service.getSomeDataById(params["id"])),
-    //   first(),
-    //   publishLast(),
-    //   refCount()
-    // );
+    this.sub = this.route.params
+      .pipe(map(params => params))
+      .subscribe(param => {
+        this.loading = true;
+        this.service.getSomeDataById(param["id"]).subscribe(
+          () => {
+            this.loading = false;
+            console.log("success");
+          },
+          error => {
+            this.loading = false;
+            console.error("error");
+          }
+        );
+      });
 
-    this.posts$ = this.route.data.pipe(map(data => data["detail"][0]));
+    // this.posts$ = this.route.data.pipe(map(data => data["detail"][0]));
   }
 
   onChange(e) {
@@ -46,13 +63,19 @@ export class Child1Component implements OnInit {
   }
 
   tryUpdate() {
+    this.loading = true;
     this.service.getSomeData().subscribe(
       () => {
+        this.loading = false;
         console.log("success");
       },
       error => {
+        this.loading = false;
         console.error("error");
       }
     );
+  }
+  ngOnDestroy() {
+    this.sub.unsubscribe();
   }
 }

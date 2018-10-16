@@ -24,6 +24,7 @@ export class MyServiceService {
   getSomeDataById(id) {
     return this._http.get(`${this.api}posts/${id}`).pipe(
       map(res => res.json()),
+      tap(data => this.subject.next(data)),
       publishLast(),
       refCount()
     );
@@ -32,7 +33,7 @@ export class MyServiceService {
   getSomeData() {
     return this._http.get(`${this.api}posts`).pipe(
       map(res => res.json()),
-
+      switchMap(data => this.getSomeDataById(1)),
       publishLast(),
       refCount()
     );
