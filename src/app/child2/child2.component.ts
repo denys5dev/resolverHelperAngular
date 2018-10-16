@@ -15,6 +15,8 @@ import {
 export class Child2Component implements OnInit, OnChanges {
   @Input()
   posts;
+  @Input()
+  list;
   constructor() {}
 
   ngOnInit() {}

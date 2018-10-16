@@ -2,7 +2,15 @@ import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { MyServiceService } from "../my-service.service";
 import { Observable } from "rxjs";
 import { ActivatedRoute, Router } from "@angular/router";
-import { switchMap, first, publishLast, refCount, map } from "rxjs/operators";
+import {
+  switchMap,
+  first,
+  publishLast,
+  refCount,
+  map,
+  share,
+  take
+} from "rxjs/operators";
 
 @Component({
   selector: "app-child1",
@@ -13,6 +21,7 @@ import { switchMap, first, publishLast, refCount, map } from "rxjs/operators";
 export class Child1Component implements OnInit {
   title = "ObservableHelper";
   posts$: Observable<any>;
+  manyPosts$: Observable<any>;
 
   constructor(
     private service: MyServiceService,
@@ -28,10 +37,22 @@ export class Child1Component implements OnInit {
     //   publishLast(),
     //   refCount()
     // );
+
     this.posts$ = this.route.data.pipe(map(data => data["detail"][0]));
   }
 
   onChange(e) {
     this.router.navigate([`./path`, e.target.value]);
+  }
+
+  tryUpdate() {
+    this.service.getSomeData().subscribe(
+      () => {
+        console.log("success");
+      },
+      error => {
+        console.error("error");
+      }
+    );
   }
 }
